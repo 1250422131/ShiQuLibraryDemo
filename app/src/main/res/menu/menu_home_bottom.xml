@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/home_menu_home"
+        android:orderInCategory="0"
+        android:icon="@drawable/selector_menu_home"
+        android:title="首页" />
+
+
+    <item
+        android:orderInCategory="1"
+        android:id="@+id/home_menu_hearing"
+        android:icon="@drawable/selector_menu_hearing"
+        android:title="听力" />
+
+    <item
+        android:orderInCategory="2"
+        android:id="@+id/home_menu_library"
+        android:icon="@drawable/selector_menu_library"
+        android:title="文库" />
+
+    <item
+        android:orderInCategory="3"
+        android:id="@+id/home_menu_mine"
+        android:icon="@drawable/selector_menu_mine"
+        android:title="我的" />
+</menu>
