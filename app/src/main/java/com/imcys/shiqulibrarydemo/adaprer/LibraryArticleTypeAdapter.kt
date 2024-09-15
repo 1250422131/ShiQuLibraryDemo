@@ -5,6 +5,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.imcys.shiqulibrarydemo.R
 import com.imcys.shiqulibrarydemo.base.BaseRecyclerViewAdapter
+import com.imcys.shiqulibrarydemo.base.CommonViewHolder
 import com.imcys.shiqulibrarydemo.databinding.ItemLibraryArticleTypeBinding
 import com.imcys.shiqulibrarydemo.model.ArticleTypeData
 
@@ -12,8 +13,7 @@ class LibraryArticleTypeAdapter : BaseRecyclerViewAdapter<ItemLibraryArticleType
 
     var dataList = listOf<ArticleTypeData>()
 
-    var selectIndex = 0
-        private set
+    private var selectIndex = 0
 
 
     override fun onCreateViewHolder(
@@ -33,6 +33,7 @@ class LibraryArticleTypeAdapter : BaseRecyclerViewAdapter<ItemLibraryArticleType
         position: Int
     ) {
         val context = holder.itemView.context
+        val data = dataList[position]
         holder.binding.apply {
             if (position == selectIndex) {
                 typeName.setTextColor(context.getColor(R.color.primary))
@@ -42,8 +43,25 @@ class LibraryArticleTypeAdapter : BaseRecyclerViewAdapter<ItemLibraryArticleType
                 main.setBackgroundColor(context.getColor(R.color.neutral))
             }
 
-            typeName.text = dataList[position].type
+            typeName.text = data.type
             indicator.visibility = if (position == selectIndex) View.VISIBLE else View.GONE
+
+            if (holder.adapterPosition == 0) {
+                // 精心挑选 设置drawableStart
+                typeName.setCompoundDrawablesWithIntrinsicBounds(
+                    R.drawable.ic_carefully_selected,
+                    0,
+                    0,
+                      0
+                )
+            } else {
+                typeName.setCompoundDrawablesWithIntrinsicBounds(
+                    0,
+                    0,
+                    0,
+                    0
+                )
+            }
 
             main.setOnClickListener {
 
@@ -56,7 +74,7 @@ class LibraryArticleTypeAdapter : BaseRecyclerViewAdapter<ItemLibraryArticleType
                 notifyItemChanged(selectIndex)
 
                 // 回调
-                onItemClick?.invoke(dataList[position])
+                onItemClick?.invoke(data)
             }
         }
     }

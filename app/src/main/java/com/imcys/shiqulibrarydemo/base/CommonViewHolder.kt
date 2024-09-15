@@ -1,4 +1,4 @@
-package com.imcys.shiqulibrarydemo.adaprer
+package com.imcys.shiqulibrarydemo.base
 
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
