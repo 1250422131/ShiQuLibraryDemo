@@ -5,10 +5,10 @@ import com.imcys.shiqulibrarydemo.model.ApiResponse
 import retrofit2.HttpException
 import java.net.SocketTimeoutException
 
-suspend fun <T : ApiResponse<T>> ViewModel.requestApi(job: suspend () -> T): ApiResponse<T> {
+suspend fun <T> ViewModel.requestApi(job: suspend () -> ApiResponse<T>): ApiResponse<T> {
     val catchResult = runCatching { job() }
     return if (catchResult.isSuccess) {
-        ApiResponse(200, catchResult.getOrNull(), "请求成功")
+        ApiResponse(200, catchResult.getOrNull()?.data, "请求成功")
     } else {
         when (val exception = catchResult.exceptionOrNull()) {
             is HttpException -> {

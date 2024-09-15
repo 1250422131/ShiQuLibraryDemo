@@ -1,6 +1,7 @@
 package com.imcys.shiqulibrarydemo.adaprer
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import com.imcys.shiqulibrarydemo.R
 import com.imcys.shiqulibrarydemo.base.BaseRecyclerViewAdapter
@@ -37,11 +38,12 @@ class LibraryArticleTypeAdapter : BaseRecyclerViewAdapter<ItemLibraryArticleType
                 typeName.setTextColor(context.getColor(R.color.primary))
                 main.setBackgroundColor(context.getColor(R.color.white))
             } else {
-                typeName.setTextColor(context.getColor(R.color.white))
+                typeName.setTextColor(context.getColor(R.color.black))
                 main.setBackgroundColor(context.getColor(R.color.neutral))
             }
 
             typeName.text = dataList[position].type
+            indicator.visibility = if (position == selectIndex) View.VISIBLE else View.GONE
 
             main.setOnClickListener {
 

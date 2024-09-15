@@ -1,8 +1,10 @@
 package com.imcys.shiqulibrarydemo.model
 
 import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
- class ApiResponse<T>(
+@Serializable
+ data class ApiResponse<T>(
     @SerialName("code")
     val code: Int,
     @SerialName("data")

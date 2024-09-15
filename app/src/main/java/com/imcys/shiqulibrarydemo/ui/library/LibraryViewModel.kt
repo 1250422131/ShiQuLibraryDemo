@@ -17,19 +17,19 @@ class LibraryViewModel(private val shiQuLibraryService: ShiQuLibraryService) : V
     val articleTypeList = _articleTypeList.asStateFlow()
 
 
-  fun loadArticleTypeList() {
-      viewModelScope.launch {
-          requestApi {
-              shiQuLibraryService.getArticleTypeList()
-          }.apply {
-              if (code == 200) {
-
-              } else {
-                  // 请求失败
-                  Log.e("TAG", "loadArticleTypeList: ${this.msg}")
-              }
-          }
-      }
-  }
+    fun loadArticleTypeList() {
+        viewModelScope.launch {
+            requestApi {
+                shiQuLibraryService.getArticleTypeList()
+            }.apply {
+                if (code == 200) {
+                    data?.let { _articleTypeList.emit(it)}
+                } else {
+                    // 请求失败
+                    Log.e("TAG", "loadArticleTypeList: ${this.msg}")
+                }
+            }
+        }
+    }
 
 }
