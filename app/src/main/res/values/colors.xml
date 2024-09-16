@@ -5,4 +5,5 @@
 
     <color name="primary">#ff009dff</color>
     <color name="neutral">#fff0f0f5</color>
+    <color name="library_article_bg">#f3f6fb</color>
 </resources>

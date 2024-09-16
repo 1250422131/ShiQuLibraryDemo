@@ -5,6 +5,6 @@ import androidx.viewbinding.ViewBinding
 import com.imcys.shiqulibrarydemo.model.ArticleTypeData
 
 
-abstract class BaseRecyclerViewAdapter<VB:ViewBinding> : RecyclerView.Adapter<CommonViewHolder<VB>>() {
-    var onItemClick: ((ArticleTypeData) -> Unit)? = null
+abstract class BaseRecyclerViewAdapter<VB:ViewBinding,D> : RecyclerView.Adapter<CommonViewHolder<VB>>() {
+    var onItemClick: ((D) -> Unit)? = null
 }

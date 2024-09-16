@@ -6,10 +6,10 @@ import android.view.ViewGroup
 import com.imcys.shiqulibrarydemo.R
 import com.imcys.shiqulibrarydemo.base.BaseRecyclerViewAdapter
 import com.imcys.shiqulibrarydemo.base.CommonViewHolder
-import com.imcys.shiqulibrarydemo.databinding.ItemArticleDifficultBinding
+import com.imcys.shiqulibrarydemo.databinding.ItemLibraryArticleDifficultBinding
 
 
-class ArticleDifficultAdapter : BaseRecyclerViewAdapter<ItemArticleDifficultBinding>() {
+class ArticleDifficultAdapter : BaseRecyclerViewAdapter<ItemLibraryArticleDifficultBinding,Int>() {
 
     var dataList = listOf<Int>()
 
@@ -18,8 +18,8 @@ class ArticleDifficultAdapter : BaseRecyclerViewAdapter<ItemArticleDifficultBind
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
-    ): CommonViewHolder<ItemArticleDifficultBinding> {
-        val binding = ItemArticleDifficultBinding.inflate(
+    ): CommonViewHolder<ItemLibraryArticleDifficultBinding> {
+        val binding = ItemLibraryArticleDifficultBinding.inflate(
             LayoutInflater.from(parent.context),
             parent,
             false
@@ -30,7 +30,7 @@ class ArticleDifficultAdapter : BaseRecyclerViewAdapter<ItemArticleDifficultBind
     override fun getItemCount(): Int = dataList.size
 
     override fun onBindViewHolder(
-        holder: CommonViewHolder<ItemArticleDifficultBinding>,
+        holder: CommonViewHolder<ItemLibraryArticleDifficultBinding>,
         position: Int
     ) {
         val context = holder.itemView.context
@@ -39,11 +39,11 @@ class ArticleDifficultAdapter : BaseRecyclerViewAdapter<ItemArticleDifficultBind
         holder.binding.apply {
             if (mPosition == selectIndex) {
                 main.setBackgroundResource(R.drawable.shape_article_difficult_round_bg)
-//                level.setTextColor(context.getColor(R.color.primary))
+                level.setTextColor(context.getColor(R.color.primary))
             } else {
                 // 清除背景
                 main.setBackgroundResource(0)
-//                level.setTextColor(context.getColor(R.color.black))
+                level.setTextColor(context.getColor(R.color.black))
             }
 
             level.text = data.toString()
@@ -53,6 +53,9 @@ class ArticleDifficultAdapter : BaseRecyclerViewAdapter<ItemArticleDifficultBind
                 selectIndex = mPosition
                 notifyItemChanged(tempIndex)
                 notifyItemChanged(selectIndex)
+
+                // 回调
+                onItemClick?.invoke(data)
             }
 
 

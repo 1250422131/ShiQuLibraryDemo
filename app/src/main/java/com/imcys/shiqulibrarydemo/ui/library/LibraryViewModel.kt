@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.imcys.shiqulibrarydemo.http.retrofit.api.ShiQuLibraryService
 import com.imcys.shiqulibrarydemo.model.AppArticleDifficultData
 import com.imcys.shiqulibrarydemo.model.ArticleTypeData
+import com.imcys.shiqulibrarydemo.model.LibraryArticleLisData
 import com.imcys.shiqulibrarydemo.utils.extend.requestApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -20,21 +21,40 @@ class LibraryViewModel(private val shiQuLibraryService: ShiQuLibraryService) : V
     private val _articleDifficultData = MutableStateFlow(listOf<Int>())
     val articleDifficultData = _articleDifficultData.asStateFlow()
 
+    private val _articleList = MutableStateFlow<LibraryArticleLisData?>(null)
+    val articleList = _articleList.asStateFlow()
+
     init {
         loadArticleTypeList()
         loadArticleDifficultList()
+        loadArticleList(600)
     }
 
-    fun loadArticleDifficultList(){
+    fun loadArticleList(lexile: Int, typeId: Int = 0, page: Int = 1, size: Int = 10) {
+        viewModelScope.launch {
+            requestApi {
+                shiQuLibraryService.getArticleList(lexile, typeId, page, size)
+            }.apply {
+                if (code == 200) {
+                    data?.let { _articleList.emit(it) }
+                } else {
+                    // 请求失败
+                    Log.e("TAG", "loadArticleList: ${this.msg}")
+                }
+            }
+        }
+    }
+
+    fun loadArticleDifficultList() {
         viewModelScope.launch {
             requestApi {
                 shiQuLibraryService.getAppArticleDifficultList()
             }.apply {
                 if (code == 200) {
-                    data?.let { _articleDifficultData.emit(it)}
+                    data?.let { _articleDifficultData.emit(it) }
                 } else {
                     // 请求失败
-                    Log.e("TAG", "loadArticleTypeList: ${this.msg}")
+                    Log.e("TAG", "loadArticleDifficultList: ${this.msg}")
                 }
             }
         }
@@ -46,7 +66,7 @@ class LibraryViewModel(private val shiQuLibraryService: ShiQuLibraryService) : V
                 shiQuLibraryService.getArticleTypeList()
             }.apply {
                 if (code == 200) {
-                    data?.let { _articleTypeList.emit(it)}
+                    data?.let { _articleTypeList.emit(it) }
                 } else {
                     // 请求失败
                     Log.e("TAG", "loadArticleTypeList: ${this.msg}")

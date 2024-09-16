@@ -9,9 +9,14 @@ import com.imcys.shiqulibrarydemo.base.CommonViewHolder
 import com.imcys.shiqulibrarydemo.databinding.ItemLibraryArticleTypeBinding
 import com.imcys.shiqulibrarydemo.model.ArticleTypeData
 
-class LibraryArticleTypeAdapter : BaseRecyclerViewAdapter<ItemLibraryArticleTypeBinding>() {
+class LibraryArticleTypeAdapter : BaseRecyclerViewAdapter<ItemLibraryArticleTypeBinding,ArticleTypeData>() {
 
     var dataList = listOf<ArticleTypeData>()
+        set(value) {
+            field = value.toMutableList().apply {
+                add(0, ArticleTypeData(id = 0, type = "精选阅读"))
+            }.toList()
+        }
 
     private var selectIndex = 0
 
@@ -52,7 +57,7 @@ class LibraryArticleTypeAdapter : BaseRecyclerViewAdapter<ItemLibraryArticleType
                     R.drawable.ic_carefully_selected,
                     0,
                     0,
-                      0
+                    0
                 )
             } else {
                 typeName.setCompoundDrawablesWithIntrinsicBounds(
