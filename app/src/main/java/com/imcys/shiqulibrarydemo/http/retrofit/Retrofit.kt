@@ -25,7 +25,7 @@ class DebugCookieInterceptor : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
         val request = chain.request()
         val newRequest = request.newBuilder()
-            .addHeader("Cookie", "sid=OFvEbpyl4PyKkc/cSjl2tW3g5Ga/z5DPSQRGQn8mJBs=")
+            .addHeader("Cookie", "sid=ue2wBIhOaiN7XldqEQrOhrWPKliX48YRSQRGQn8mJBs=")
             .build()
         return chain.proceed(newRequest)
     }

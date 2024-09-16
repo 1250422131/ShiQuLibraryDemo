@@ -10,6 +10,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.imcys.shiqulibrarydemo.adaprer.ArticleDifficultAdapter
 import com.imcys.shiqulibrarydemo.adaprer.LibraryArticleTypeAdapter
 import com.imcys.shiqulibrarydemo.base.BaseFragment
 import com.imcys.shiqulibrarydemo.databinding.FragmentLibraryBinding
@@ -25,7 +26,7 @@ class LibraryFragment : BaseFragment<FragmentLibraryBinding>() {
 
     private val viewModel: LibraryViewModel by viewModel()
     private val articleTypeAdapter = LibraryArticleTypeAdapter()
-
+    private val articleDifficultAdapter = ArticleDifficultAdapter()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
     }
@@ -59,11 +60,32 @@ class LibraryFragment : BaseFragment<FragmentLibraryBinding>() {
                 }
             }
         }
+
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.articleDifficultData.collect {
+                    articleDifficultAdapter.dataList = it
+                    articleDifficultAdapter.notifyDataSetChanged()
+                }
+            }
+        }
     }
 
     private fun initView() {
         initArticleTypeList()
-        viewModel.loadArticleTypeList()
+        initArticleDifficultList()
+    }
+
+    private fun initArticleDifficultList() {
+        binding.apply {
+            libraryArticleDifficultRv.adapter = articleDifficultAdapter
+            articleDifficultAdapter.onItemClick = {
+
+            }
+            libraryArticleDifficultRv.layoutManager =
+                LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+
+        }
     }
 
     private fun initArticleTypeList() {

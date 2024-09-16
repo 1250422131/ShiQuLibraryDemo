@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.imcys.shiqulibrarydemo.http.retrofit.api.ShiQuLibraryService
+import com.imcys.shiqulibrarydemo.model.AppArticleDifficultData
 import com.imcys.shiqulibrarydemo.model.ArticleTypeData
 import com.imcys.shiqulibrarydemo.utils.extend.requestApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -16,6 +17,28 @@ class LibraryViewModel(private val shiQuLibraryService: ShiQuLibraryService) : V
     private val _articleTypeList = MutableStateFlow<List<ArticleTypeData>>(listOf())
     val articleTypeList = _articleTypeList.asStateFlow()
 
+    private val _articleDifficultData = MutableStateFlow(listOf<Int>())
+    val articleDifficultData = _articleDifficultData.asStateFlow()
+
+    init {
+        loadArticleTypeList()
+        loadArticleDifficultList()
+    }
+
+    fun loadArticleDifficultList(){
+        viewModelScope.launch {
+            requestApi {
+                shiQuLibraryService.getAppArticleDifficultList()
+            }.apply {
+                if (code == 200) {
+                    data?.let { _articleDifficultData.emit(it)}
+                } else {
+                    // 请求失败
+                    Log.e("TAG", "loadArticleTypeList: ${this.msg}")
+                }
+            }
+        }
+    }
 
     fun loadArticleTypeList() {
         viewModelScope.launch {

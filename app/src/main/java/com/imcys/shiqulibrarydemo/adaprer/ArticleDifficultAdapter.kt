@@ -13,7 +13,8 @@ class ArticleDifficultAdapter : BaseRecyclerViewAdapter<ItemArticleDifficultBind
 
     var dataList = listOf<Int>()
 
-    var selectIndex = 0
+    private var selectIndex = 0
+
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
@@ -38,14 +39,23 @@ class ArticleDifficultAdapter : BaseRecyclerViewAdapter<ItemArticleDifficultBind
         holder.binding.apply {
             if (mPosition == selectIndex) {
                 main.setBackgroundResource(R.drawable.shape_article_difficult_round_bg)
-                level.setTextColor(context.getColor(R.color.primary))
+//                level.setTextColor(context.getColor(R.color.primary))
             } else {
                 // 清除背景
                 main.setBackgroundResource(0)
-                val typedValue = TypedValue()
-                context.theme.resolveAttribute(android.R.attr.textColorPrimary, typedValue, true)
-                level.setTextColor(typedValue.data)
+//                level.setTextColor(context.getColor(R.color.black))
             }
+
+            level.text = data.toString()
+
+            main.setOnClickListener {
+                val tempIndex = selectIndex
+                selectIndex = mPosition
+                notifyItemChanged(tempIndex)
+                notifyItemChanged(selectIndex)
+            }
+
+
         }
     }
 }

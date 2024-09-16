@@ -20,6 +20,6 @@ interface ShiQuLibraryService {
      * 获取文章难度列表
      */
     @GET("englishgpt/appArticle/selectList")
-    suspend fun getAppArticleDifficultList(): ApiResponse<AppArticleDifficultData>
+    suspend fun getAppArticleDifficultList(): ApiResponse<ArrayList<Int>>
 
 }

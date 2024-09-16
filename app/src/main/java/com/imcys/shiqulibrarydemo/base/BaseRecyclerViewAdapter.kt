@@ -6,5 +6,5 @@ import com.imcys.shiqulibrarydemo.model.ArticleTypeData
 
 
 abstract class BaseRecyclerViewAdapter<VB:ViewBinding> : RecyclerView.Adapter<CommonViewHolder<VB>>() {
-    protected var onItemClick: ((ArticleTypeData) -> Unit)? = null
+    var onItemClick: ((ArticleTypeData) -> Unit)? = null
 }
