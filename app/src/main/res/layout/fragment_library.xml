@@ -86,7 +86,7 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <com.scwang.smart.refresh.layout.SmartRefreshLayout
-            android:id="@+id/refreshLayout"
+            android:id="@+id/library_article_refreshLayout"
             android:layout_width="0dp"
             android:layout_height="0dp"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -96,7 +96,7 @@
             app:layout_constraintTop_toBottomOf="@+id/recyclerView6"
             app:layout_constraintVertical_bias="0.0">
 
-            <com.scwang.smart.refresh.layout.wrapper.RefreshHeaderWrapper
+            <com.imcys.shiqulibrarydemo.weight.ArticleRefreshHeader
                 android:id="@+id/library_article_refresh_header"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
@@ -106,6 +106,12 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:paddingHorizontal="15dp" />
+
+
+            <com.imcys.shiqulibrarydemo.weight.ArticleRefreshFooter
+                android:id="@+id/library_article_refresh_footer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
 
         </com.scwang.smart.refresh.layout.SmartRefreshLayout>
 

@@ -1,6 +1,5 @@
 package com.imcys.shiqulibrarydemo.ui.library
 
-import android.R
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -17,9 +16,9 @@ import com.imcys.shiqulibrarydemo.adaprer.LibraryArticleTypeAdapter
 import com.imcys.shiqulibrarydemo.base.BaseFragment
 import com.imcys.shiqulibrarydemo.databinding.FragmentLibraryBinding
 import com.imcys.shiqulibrarydemo.model.LibraryArticleLisData
+import com.imcys.shiqulibrarydemo.weight.ArticleRefreshFooter
 import com.imcys.shiqulibrarydemo.weight.ArticleRefreshHeader
-import com.scwang.smart.refresh.layout.SmartRefreshLayout
-import com.scwang.smart.refresh.layout.listener.DefaultRefreshHeaderCreator
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -35,7 +34,7 @@ class LibraryFragment : BaseFragment<FragmentLibraryBinding>() {
     private val articleDifficultAdapter = ArticleDifficultAdapter()
     private val articleAdapter = LibraryArticleAdapter()
     private var selectedTypeId: Int = 0
-    private var selectedDifficult: Int = 5
+    private var selectedDifficult: Int = 600
     private var currentPageInfo: LibraryArticleLisData? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -88,8 +87,27 @@ class LibraryFragment : BaseFragment<FragmentLibraryBinding>() {
                 viewModel.articleList.collect {
                     it?.let { data ->
                         currentPageInfo = data
-                        articleAdapter.dataList = data.list
-                        articleAdapter.notifyDataSetChanged()
+                        articleAdapter.submitList(articleAdapter.currentList + data.list)
+                        if (currentPageInfo?.hasNextPage != true) {
+                            // 阻断加载
+                            binding.libraryArticleRefreshLayout.finishLoadMoreWithNoMoreData()
+                        } else {
+                            // 解除还有更多数据
+                            binding.libraryArticleRefreshLayout.finishLoadMore()
+                        }
+
+                    }
+                }
+            }
+        }
+
+        // 加载/刷新状态
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.isRefresh.collect {
+                    if (!it) {
+                        binding.libraryArticleRefreshLayout.finishRefresh()
+                        binding.libraryArticleRefreshLayout.finishLoadMore()
                     }
                 }
             }
@@ -113,12 +131,32 @@ class LibraryFragment : BaseFragment<FragmentLibraryBinding>() {
             libraryArticleRv.adapter = articleAdapter
             libraryArticleRv.layoutManager = LinearLayoutManager(requireContext())
 
-            //设置全局的Header构建器
-            SmartRefreshLayout.setDefaultRefreshHeaderCreator(DefaultRefreshHeaderCreator { context, layout ->
-                ArticleRefreshHeader(context)
-            })
-            refreshLayout.setOnRefreshListener { refreshlayout ->
-                refreshlayout.finishRefresh(2000 /*,false*/) //传入false表示刷新失败
+            libraryArticleRefreshLayout.setRefreshHeader(ArticleRefreshHeader(context))
+            libraryArticleRefreshLayout.setRefreshFooter(ArticleRefreshFooter(context))
+            libraryArticleRefreshLayout.setOnRefreshListener { refreshlayout ->
+                // 请求刷新
+                lifecycleScope.launch(Dispatchers.IO) {
+                    viewModel.refreshArticle(
+                        lexile = selectedDifficult,
+                        typeId = selectedTypeId,
+                        page = currentPageInfo?.pageNum ?: 1,
+                        size = currentPageInfo?.size ?: 10,
+                    )
+                }
+            }
+            libraryArticleRefreshLayout.setEnableLoadMoreWhenContentNotFull(false)//取消内容不满一页时开启上拉加载功能
+            libraryArticleRefreshLayout.setOnLoadMoreListener {
+                // 请求加载更多
+                lifecycleScope.launch(Dispatchers.IO) {
+                    if (currentPageInfo?.hasNextPage == true) {
+                        viewModel.refreshArticle(
+                            lexile = selectedDifficult,
+                            typeId = selectedTypeId,
+                            page = currentPageInfo?.nextPage ?: 1,
+                            size = currentPageInfo?.size ?: 10,
+                        )
+                    }
+                }
             }
         }
     }
@@ -133,6 +171,7 @@ class LibraryFragment : BaseFragment<FragmentLibraryBinding>() {
                 // 点击了文章难度
                 // 加载文章列表
                 selectedDifficult = it
+                articleAdapter.submitList(listOf())
                 viewModel.loadArticleList(selectedDifficult, selectedTypeId)
             }
             libraryArticleDifficultRv.layoutManager =
@@ -151,6 +190,7 @@ class LibraryFragment : BaseFragment<FragmentLibraryBinding>() {
                 // 点击了文章类型
                 // 加载文章列表
                 selectedTypeId = it.id
+                articleAdapter.submitList(listOf())
                 viewModel.loadArticleList(selectedDifficult, selectedTypeId)
             }
             libraryArticleTypeRv.layoutManager = LinearLayoutManager(requireContext())

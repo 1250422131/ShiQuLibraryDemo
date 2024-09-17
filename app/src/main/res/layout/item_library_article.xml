@@ -2,27 +2,29 @@
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
     android:id="@+id/main"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:foreground="?android:attr/selectableItemBackground"
     android:layout_marginBottom="10dp"
     android:elevation="0dp"
+    android:foreground="?android:attr/selectableItemBackground"
     app:cardCornerRadius="6dp"
     app:cardElevation="0dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
 
-        android:background="@color/library_article_bg"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="15dp">
+        android:background="@color/library_article_bg">
 
 
         <androidx.constraintlayout.utils.widget.ImageFilterView
             android:id="@+id/article_cover"
             android:layout_width="70dp"
             android:layout_height="50dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
             android:scaleType="centerCrop"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -35,10 +37,10 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
-            android:maxLines="2"
-            android:text="TextView"
             android:breakStrategy="high_quality"
             android:ellipsize="end"
+            android:maxLines="2"
+            android:text="TextView"
             android:textSize="13sp"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
@@ -59,12 +61,12 @@
             app:layout_constraintStart_toStartOf="@+id/article_title" />
 
         <TextView
-            android:drawablePadding="3dp"
             android:id="@+id/article_word"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
             android:drawableStart="@drawable/ic_library_world"
+            android:drawablePadding="3dp"
             android:drawableTint="@color/material_dynamic_neutral60"
             android:text="600词"
             android:textColor="@color/material_dynamic_neutral60"
@@ -72,6 +74,30 @@
             app:layout_constraintBottom_toBottomOf="@+id/article_level"
             app:layout_constraintStart_toEndOf="@+id/article_level"
             app:layout_constraintTop_toTopOf="@+id/article_level" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/article_type_ly"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/shape_library_article_tag_bg"
+            android:padding="3dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <TextView
+                android:id="@+id/article_type"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/shape_library_article_tag_bg"
+                android:text="类型"
+                android:textColor="@color/white"
+                android:textSize="8sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

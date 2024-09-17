@@ -4,7 +4,6 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.imcys.shiqulibrarydemo.http.retrofit.api.ShiQuLibraryService
-import com.imcys.shiqulibrarydemo.model.AppArticleDifficultData
 import com.imcys.shiqulibrarydemo.model.ArticleTypeData
 import com.imcys.shiqulibrarydemo.model.LibraryArticleLisData
 import com.imcys.shiqulibrarydemo.utils.extend.requestApi
@@ -24,11 +23,27 @@ class LibraryViewModel(private val shiQuLibraryService: ShiQuLibraryService) : V
     private val _articleList = MutableStateFlow<LibraryArticleLisData?>(null)
     val articleList = _articleList.asStateFlow()
 
+    private val _isRefresh = MutableStateFlow(false)
+    val isRefresh = _isRefresh.asStateFlow()
+
     init {
         loadArticleTypeList()
         loadArticleDifficultList()
         loadArticleList(600)
     }
+
+    fun refreshArticle(
+        lexile: Int,
+        typeId: Int = 0,
+        page: Int = 1,
+        size: Int = 10,
+    ) {
+        viewModelScope.launch {
+            _isRefresh.emit(true)
+        }
+        loadArticleList(lexile, typeId, page, size)
+    }
+
 
     fun loadArticleList(lexile: Int, typeId: Int = 0, page: Int = 1, size: Int = 10) {
         viewModelScope.launch {
@@ -41,11 +56,13 @@ class LibraryViewModel(private val shiQuLibraryService: ShiQuLibraryService) : V
                     // 请求失败
                     Log.e("TAG", "loadArticleList: ${this.msg}")
                 }
+                _isRefresh.emit(false)
             }
         }
     }
 
-    fun loadArticleDifficultList() {
+
+    private fun loadArticleDifficultList() {
         viewModelScope.launch {
             requestApi {
                 shiQuLibraryService.getAppArticleDifficultList()
@@ -60,7 +77,7 @@ class LibraryViewModel(private val shiQuLibraryService: ShiQuLibraryService) : V
         }
     }
 
-    fun loadArticleTypeList() {
+    private fun loadArticleTypeList() {
         viewModelScope.launch {
             requestApi {
                 shiQuLibraryService.getArticleTypeList()

@@ -4,16 +4,16 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
-import com.imcys.shiqulibrarydemo.databinding.RefreshArticleHeaderBinding
+import com.imcys.shiqulibrarydemo.databinding.RefreshArticleFooterBinding
 import com.scwang.smart.refresh.layout.api.RefreshComponent
-import com.scwang.smart.refresh.layout.api.RefreshHeader
+import com.scwang.smart.refresh.layout.api.RefreshFooter
 import com.scwang.smart.refresh.layout.api.RefreshLayout
 import com.scwang.smart.refresh.layout.constant.RefreshState
 import com.scwang.smart.refresh.layout.simple.SimpleComponent
 
-class ArticleRefreshHeader : SimpleComponent, RefreshHeader {
+class ArticleRefreshFooter : SimpleComponent, RefreshFooter {
 
-    private  var refreshArticleHeaderBinding: RefreshArticleHeaderBinding
+    private var binding: RefreshArticleFooterBinding
 
     constructor(context: Context?) : this(context, null)
 
@@ -25,9 +25,8 @@ class ArticleRefreshHeader : SimpleComponent, RefreshHeader {
         attrs,
         defStyleAttr
     ) {
-        refreshArticleHeaderBinding =
-            RefreshArticleHeaderBinding.inflate(LayoutInflater.from(context))
-        mWrappedView = refreshArticleHeaderBinding.root
+        binding = RefreshArticleFooterBinding.inflate(LayoutInflater.from(context))
+        mWrappedView = binding.root
     }
 
     override fun onStateChanged(
@@ -35,34 +34,28 @@ class ArticleRefreshHeader : SimpleComponent, RefreshHeader {
         oldState: RefreshState,
         newState: RefreshState
     ) {
-
-        refreshArticleHeaderBinding.apply {
+        binding.apply {
             when (newState) {
                 RefreshState.PullDownToRefresh -> {
-                    refreshTipTv.text = "下拉刷新"
                 }
-                RefreshState.PullDownCanceled -> {
-                    animationView.pauseAnimation()
-                }
+
+
+
                 RefreshState.ReleaseToRefresh -> {
-                    refreshTipTv.text = "释放刷新"
                 }
-                RefreshState.Refreshing -> {
-                    refreshTipTv.text = "正在刷新"
+
+                RefreshState.Loading -> {
                     animationView.playAnimation()
                     animationView.repeatCount = 100
                 }
 
-                RefreshState.RefreshFinish ->{
-                    refreshArticleHeaderBinding.animationView.cancelAnimation()
+                RefreshState.LoadFinish -> {
+                    animationView.cancelAnimation()
                 }
 
                 else -> {}
             }
         }
-
-
     }
-
-
 }
+
