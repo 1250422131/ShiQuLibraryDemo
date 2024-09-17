@@ -2,18 +2,16 @@ package com.imcys.shiqulibrarydemo.adaprer
 
 import android.content.res.ColorStateList
 import android.graphics.Color
-import android.provider.CalendarContract.Colors
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.core.graphics.ColorUtils
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import com.bumptech.glide.Glide
-import com.imcys.shiqulibrarydemo.base.BaseRecyclerViewAdapter
 import com.imcys.shiqulibrarydemo.base.CommonViewHolder
 import com.imcys.shiqulibrarydemo.databinding.ItemLibraryArticleBinding
 import com.imcys.shiqulibrarydemo.model.LibraryArticleLisData
 import com.imcys.shiqulibrarydemo.model.eum.ArticleType
+
 
 class LibraryArticleAdapter :
     ListAdapter<LibraryArticleLisData.Item, CommonViewHolder<ItemLibraryArticleBinding>>(object :
@@ -55,7 +53,9 @@ class LibraryArticleAdapter :
         val item = getItem(position)
 
         holder.binding.apply {
-            Glide.with(articleCover).load(item.cover).into(articleCover)
+
+            Glide.with(articleCover).load(item.cover)
+                .into(articleCover)
             articleTitle.text = item.title
             articleLevel.text = "难度：${item.lexile}"
             articleWord.text = "${item.wordNum}词"

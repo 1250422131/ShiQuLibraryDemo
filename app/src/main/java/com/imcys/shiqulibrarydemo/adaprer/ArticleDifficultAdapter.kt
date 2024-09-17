@@ -13,7 +13,7 @@ class ArticleDifficultAdapter : BaseRecyclerViewAdapter<ItemLibraryArticleDiffic
 
     var dataList = listOf<Int>()
 
-    private var selectIndex = 0
+    var selectIndex = 0
 
     override fun onCreateViewHolder(
         parent: ViewGroup,

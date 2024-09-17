@@ -3,9 +3,7 @@ package com.imcys.shiqulibrarydemo.weight
 import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
-import android.view.View
 import com.imcys.shiqulibrarydemo.databinding.RefreshArticleHeaderBinding
-import com.scwang.smart.refresh.layout.api.RefreshComponent
 import com.scwang.smart.refresh.layout.api.RefreshHeader
 import com.scwang.smart.refresh.layout.api.RefreshLayout
 import com.scwang.smart.refresh.layout.constant.RefreshState

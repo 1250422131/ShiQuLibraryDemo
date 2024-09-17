@@ -45,6 +45,7 @@ dependencies {
     implementation("io.github.scwang90:refresh-layout-kernel:2.1.0")
     // 图片
     implementation("com.github.bumptech.glide:glide:4.16.0")
+    implementation ("com.github.bumptech.glide:recyclerview-integration:4.16.0")
     // 网络请求
     implementation("com.squareup.retrofit2:retrofit:2.11.0")
     // 序列化

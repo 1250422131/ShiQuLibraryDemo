@@ -61,6 +61,10 @@ class LibraryFragment : BaseFragment<FragmentLibraryBinding>() {
         return super.onCreateView(inflater, container, savedInstanceState)
     }
 
+    /**
+     * 绑定数据
+     * 监听StateFlow并且更新界面
+     */
     private fun bindData() {
         // 文章类型列表
         lifecycleScope.launch {
@@ -87,13 +91,13 @@ class LibraryFragment : BaseFragment<FragmentLibraryBinding>() {
                 viewModel.articleList.collect {
                     it?.let { data ->
                         currentPageInfo = data
-                        articleAdapter.submitList(articleAdapter.currentList + data.list)
+                        articleAdapter.submitList(data.list)
                         if (currentPageInfo?.hasNextPage != true) {
                             // 阻断加载
                             binding.libraryArticleRefreshLayout.finishLoadMoreWithNoMoreData()
                         } else {
                             // 解除还有更多数据
-                            binding.libraryArticleRefreshLayout.finishLoadMore()
+                            binding.libraryArticleRefreshLayout.setNoMoreData(false)
                         }
 
                     }
@@ -112,6 +116,30 @@ class LibraryFragment : BaseFragment<FragmentLibraryBinding>() {
                 }
             }
         }
+
+        // 困难度选择
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.selectedDifficult.collect {
+                    it?.let {
+                        // 更新困难度
+                        selectedDifficult = it
+                        // 更新库难度选择
+                        val newIndex = articleDifficultAdapter.dataList.indexOf(it)
+                        val oldIndex = articleDifficultAdapter.selectIndex
+                        articleDifficultAdapter.selectIndex = newIndex
+                        // 移动显示位置
+                        binding.libraryArticleDifficultRv.scrollToPosition(newIndex)
+                        articleDifficultAdapter.notifyItemChanged(oldIndex)
+                        articleDifficultAdapter.notifyItemChanged(newIndex)
+                        // 刷新文章列表
+                        articleAdapter.submitList(listOf())
+                        viewModel.loadArticleList(selectedDifficult, selectedTypeId,isClear = true)
+                    }
+                }
+            }
+        }
+
     }
 
     private fun initView() {
@@ -124,7 +152,7 @@ class LibraryFragment : BaseFragment<FragmentLibraryBinding>() {
     }
 
     /**
-     * 初始化文章列表
+     * 初始化文章列表，至只是将适配器和布局绑定
      */
     private fun initArticleList() {
         binding.apply {
@@ -139,11 +167,13 @@ class LibraryFragment : BaseFragment<FragmentLibraryBinding>() {
                     viewModel.refreshArticle(
                         lexile = selectedDifficult,
                         typeId = selectedTypeId,
-                        page = currentPageInfo?.pageNum ?: 1,
-                        size = currentPageInfo?.size ?: 10,
+                        page =  1,
+                        size =  10,
+                        isClear = true,
                     )
                 }
             }
+
             libraryArticleRefreshLayout.setEnableLoadMoreWhenContentNotFull(false)//取消内容不满一页时开启上拉加载功能
             libraryArticleRefreshLayout.setOnLoadMoreListener {
                 // 请求加载更多
@@ -162,7 +192,7 @@ class LibraryFragment : BaseFragment<FragmentLibraryBinding>() {
     }
 
     /**
-     * 初始化文章难度列表
+     * 初始化文章难度列表，至只是将适配器和布局绑定
      */
     private fun initArticleDifficultList() {
         binding.apply {
@@ -172,7 +202,7 @@ class LibraryFragment : BaseFragment<FragmentLibraryBinding>() {
                 // 加载文章列表
                 selectedDifficult = it
                 articleAdapter.submitList(listOf())
-                viewModel.loadArticleList(selectedDifficult, selectedTypeId)
+                viewModel.loadArticleList(selectedDifficult, selectedTypeId,isClear = true)
             }
             libraryArticleDifficultRv.layoutManager =
                 LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
@@ -181,7 +211,7 @@ class LibraryFragment : BaseFragment<FragmentLibraryBinding>() {
     }
 
     /**
-     * 初始化文章类型列表
+     * 初始化文章类型列表，至只是将适配器和布局绑定
      */
     private fun initArticleTypeList() {
         binding.apply {
@@ -191,7 +221,7 @@ class LibraryFragment : BaseFragment<FragmentLibraryBinding>() {
                 // 加载文章列表
                 selectedTypeId = it.id
                 articleAdapter.submitList(listOf())
-                viewModel.loadArticleList(selectedDifficult, selectedTypeId)
+                viewModel.loadArticleList(selectedDifficult, selectedTypeId,isClear = true)
             }
             libraryArticleTypeRv.layoutManager = LinearLayoutManager(requireContext())
         }
