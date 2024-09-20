@@ -1,5 +1,6 @@
 package com.imcys.shiqulibrarydemo.http.retrofit
 
+import com.imcys.shiqulibrarydemo.utils.HttpsUtils
 import kotlinx.serialization.json.Json
 import okhttp3.Interceptor
 import okhttp3.MediaType
@@ -9,7 +10,11 @@ import retrofit2.Retrofit
 import retrofit2.converter.kotlinx.serialization.asConverterFactory
 
 private val okHttpClient = OkHttpClient.Builder()
-    .addInterceptor(DebugCookieInterceptor())
+    .addInterceptor(DebugCookieInterceptor()).apply {
+        val sSLSocketFactory = HttpsUtils.getSslSocketFactory().sSLSocketFactory
+        val x509TrustManager = HttpsUtils.getSslSocketFactory().trustManager
+        sslSocketFactory(sSLSocketFactory, x509TrustManager)
+    }
     .build()
 
 val retrofit = Retrofit.Builder()
@@ -17,7 +22,7 @@ val retrofit = Retrofit.Builder()
     .addConverterFactory(
         Json.asConverterFactory(
             MediaType.get("application/json; charset=UTF8")))
-    .baseUrl("http://test.shiqu.zhilehuo.com/")
+    .baseUrl("https://test.shiqu.zhilehuo.com/")
     .build()
 
 

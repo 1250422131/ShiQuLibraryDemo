@@ -16,6 +16,7 @@ import com.imcys.shiqulibrarydemo.adaprer.LibraryArticleTypeAdapter
 import com.imcys.shiqulibrarydemo.base.BaseFragment
 import com.imcys.shiqulibrarydemo.databinding.FragmentLibraryBinding
 import com.imcys.shiqulibrarydemo.model.LibraryArticleLisData
+import com.imcys.shiqulibrarydemo.utils.extend.collectState
 import com.imcys.shiqulibrarydemo.weight.ArticleRefreshFooter
 import com.imcys.shiqulibrarydemo.weight.ArticleRefreshHeader
 import kotlinx.coroutines.Dispatchers
@@ -30,13 +31,13 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 class LibraryFragment : BaseFragment<FragmentLibraryBinding>() {
 
     private val viewModel: LibraryViewModel by viewModel()
+
     private val articleTypeAdapter = LibraryArticleTypeAdapter()
     private val articleDifficultAdapter = ArticleDifficultAdapter()
     private val articleAdapter = LibraryArticleAdapter()
     private var selectedTypeId: Int = 0
     private var selectedDifficult: Int = 600
     private var currentPageInfo: LibraryArticleLisData? = null
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
     }
@@ -67,76 +68,58 @@ class LibraryFragment : BaseFragment<FragmentLibraryBinding>() {
      */
     private fun bindData() {
         // 文章类型列表
-        lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.articleTypeList.collect {
-                    articleTypeAdapter.dataList = it
-                    articleTypeAdapter.notifyDataSetChanged()
-                }
-            }
+        viewModel.articleTypeList.collectState(viewLifecycleOwner) {
+            articleTypeAdapter.dataList = it
+            articleTypeAdapter.notifyDataSetChanged()
         }
+
         // 文章难度列表
-        lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.articleDifficultData.collect {
-                    articleDifficultAdapter.dataList = it
-                    articleDifficultAdapter.notifyDataSetChanged()
-                }
-            }
+        viewModel.articleDifficultData.collectState(viewLifecycleOwner) {
+            articleDifficultAdapter.dataList = it
+            articleDifficultAdapter.notifyDataSetChanged()
         }
+
 
         // 文章列表
-        lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.articleList.collect {
-                    it?.let { data ->
-                        currentPageInfo = data
-                        articleAdapter.submitList(data.list)
-                        if (currentPageInfo?.hasNextPage != true) {
-                            // 阻断加载
-                            binding.libraryArticleRefreshLayout.finishLoadMoreWithNoMoreData()
-                        } else {
-                            // 解除还有更多数据
-                            binding.libraryArticleRefreshLayout.setNoMoreData(false)
-                        }
-
-                    }
+        viewModel.articleList.collectState(viewLifecycleOwner) {
+            it?.let { data ->
+                currentPageInfo = data
+                articleAdapter.submitList(data.list)
+                if (currentPageInfo?.hasNextPage != true) {
+                    // 阻断加载
+                    binding.libraryArticleRefreshLayout.finishLoadMoreWithNoMoreData()
+                } else {
+                    // 解除还有更多数据
+                    binding.libraryArticleRefreshLayout.setNoMoreData(false)
                 }
+
             }
         }
 
         // 加载/刷新状态
-        lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.isRefresh.collect {
-                    if (!it) {
-                        binding.libraryArticleRefreshLayout.finishRefresh()
-                        binding.libraryArticleRefreshLayout.finishLoadMore()
-                    }
-                }
+        viewModel.isRefresh.collectState(viewLifecycleOwner) {
+            if (!it) {
+                binding.libraryArticleRefreshLayout.finishRefresh()
+                binding.libraryArticleRefreshLayout.finishLoadMore()
             }
         }
 
         // 困难度选择
-        lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.selectedDifficult.collect {
-                    it?.let {
-                        // 更新困难度
-                        selectedDifficult = it
-                        // 更新库难度选择
-                        val newIndex = articleDifficultAdapter.dataList.indexOf(it)
-                        val oldIndex = articleDifficultAdapter.selectIndex
-                        articleDifficultAdapter.selectIndex = newIndex
-                        // 移动显示位置
-                        binding.libraryArticleDifficultRv.scrollToPosition(newIndex)
-                        articleDifficultAdapter.notifyItemChanged(oldIndex)
-                        articleDifficultAdapter.notifyItemChanged(newIndex)
-                        // 刷新文章列表
-                        articleAdapter.submitList(listOf())
-                        viewModel.loadArticleList(selectedDifficult, selectedTypeId,isClear = true)
-                    }
-                }
+        viewModel.selectedDifficult.collectState(viewLifecycleOwner) {
+            it?.let {
+                // 更新困难度
+                selectedDifficult = it
+                // 更新库难度选择
+                val newIndex = articleDifficultAdapter.dataList.indexOf(it)
+                val oldIndex = articleDifficultAdapter.selectIndex
+                articleDifficultAdapter.selectIndex = newIndex
+                // 移动显示位置
+                binding.libraryArticleDifficultRv.scrollToPosition(newIndex)
+                articleDifficultAdapter.notifyItemChanged(oldIndex)
+                articleDifficultAdapter.notifyItemChanged(newIndex)
+                // 刷新文章列表
+                articleAdapter.submitList(listOf())
+                viewModel.loadArticleList(selectedDifficult, selectedTypeId, isClear = true)
             }
         }
 
@@ -167,8 +150,8 @@ class LibraryFragment : BaseFragment<FragmentLibraryBinding>() {
                     viewModel.refreshArticle(
                         lexile = selectedDifficult,
                         typeId = selectedTypeId,
-                        page =  1,
-                        size =  10,
+                        page = 1,
+                        size = 10,
                         isClear = true,
                     )
                 }
@@ -202,7 +185,7 @@ class LibraryFragment : BaseFragment<FragmentLibraryBinding>() {
                 // 加载文章列表
                 selectedDifficult = it
                 articleAdapter.submitList(listOf())
-                viewModel.loadArticleList(selectedDifficult, selectedTypeId,isClear = true)
+                viewModel.loadArticleList(selectedDifficult, selectedTypeId, isClear = true)
             }
             libraryArticleDifficultRv.layoutManager =
                 LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
@@ -221,7 +204,7 @@ class LibraryFragment : BaseFragment<FragmentLibraryBinding>() {
                 // 加载文章列表
                 selectedTypeId = it.id
                 articleAdapter.submitList(listOf())
-                viewModel.loadArticleList(selectedDifficult, selectedTypeId,isClear = true)
+                viewModel.loadArticleList(selectedDifficult, selectedTypeId, isClear = true)
             }
             libraryArticleTypeRv.layoutManager = LinearLayoutManager(requireContext())
         }

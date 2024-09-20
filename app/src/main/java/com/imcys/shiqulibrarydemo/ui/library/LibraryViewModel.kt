@@ -12,7 +12,9 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class LibraryViewModel(private val shiQuLibraryService: ShiQuLibraryService) : ViewModel() {
+class LibraryViewModel(
+    private val shiQuLibraryService: ShiQuLibraryService
+) : ViewModel() {
 
     private val _articleTypeList = MutableStateFlow<List<ArticleTypeData>>(listOf())
     val articleTypeList = _articleTypeList.asStateFlow()
@@ -25,7 +27,6 @@ class LibraryViewModel(private val shiQuLibraryService: ShiQuLibraryService) : V
 
     private val _isRefresh = MutableStateFlow(false)
     val isRefresh = _isRefresh.asStateFlow()
-
 
     private val _selectedDifficult = MutableStateFlow<Int?>(null)
     val selectedDifficult = _selectedDifficult.asStateFlow()
@@ -91,6 +92,7 @@ class LibraryViewModel(private val shiQuLibraryService: ShiQuLibraryService) : V
                     data?.let {
                         // 让新的数据和旧的合并
                         val newItems = if (isClear) {
+                            _articleList.emit(null)
                             it.list
                         } else {
                             (articleList.value?.list ?: listOf()) + it.list
